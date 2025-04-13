@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import LoadingSpinner from './LoadingSpinner';
 import { Sparkles } from 'lucide-react';
 
@@ -50,12 +50,39 @@ const BlogGeneratorForm = ({ onBlogGenerated }: BlogGeneratorFormProps) => {
         throw new Error('Failed to generate blog');
       }
       
-      const data = await response.json();
+      // Get the response text first
+      const responseText = await response.text();
       
-      if (data && data.title && data.content) {
+      // Try to parse as JSON if possible
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        // If not valid JSON, try to extract title and content from the text response
+        console.log("Response is not JSON, parsing text format:", responseText);
+        
+        // Simple extraction for title and content from text
+        // Assuming the first line that contains "Title:" or similar is the title
+        // and the rest is the content
+        const lines = responseText.split("\n");
+        let title = "Generated Blog";
+        let content = responseText;
+        
+        // Try to extract title if it follows common patterns
+        const titleMatch = responseText.match(/(?:title:|##)\s*(.*?)(?:\n|$)/i);
+        if (titleMatch && titleMatch[1]) {
+          title = titleMatch[1].trim();
+          // Remove the title line from content
+          content = content.replace(titleMatch[0], "").trim();
+        }
+        
+        data = { title, content };
+      }
+      
+      if (data && (data.title || data.content)) {
         onBlogGenerated({
-          title: data.title,
-          content: data.content
+          title: data.title || "Generated Blog",
+          content: data.content || responseText
         });
         
         toast({
