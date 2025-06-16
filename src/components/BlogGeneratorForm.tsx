@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +32,7 @@ const BlogGeneratorForm = ({ onBlogGenerated }: BlogGeneratorFormProps) => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('https://hook.eu2.make.com/kejyqtqela4o9wsbx6idrucwd46aoj9a', {
+      const response = await fetch('https://hook.eu2.make.com/hi1y4vuclef5p7k7ccjn94uz6cl10rtm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
